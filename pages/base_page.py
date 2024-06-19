@@ -11,9 +11,17 @@ class BasePage:
     def find_element(self, *locator):
         return self.browser.find_element(*locator)
 
+    def scroll_to_element(self, *locator):
+        element = self.find_element(*locator)
+        self.browser.execute_script("arguments[0].scrollIntoView(true);", element)
+
     def click_element(self, *locator):
         element = self.find_element(*locator)
-        element.click()
+        self.scroll_to_element(*locator)
+        WebDriverWait(self.browser, 10).until(EC.element_to_be_clickable(locator))
+        self.browser.execute_script("arguments[0].click();", element)
+
+
 
     def wait_for_element(self, *locator, timeout=10):
         WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located(locator))
